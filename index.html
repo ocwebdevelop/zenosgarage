@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenosGarage - Top Prodotti Auto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@600&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: repeating-linear-gradient(
+      45deg,
+      #1c1c1c,
+      #1c1c1c 5px,
+      #2a2a2a 5px,
+      #2a2a2a 10px
+    );
+    color: #fff;
+  }
+
+  header {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(0,0,0,0.7);
+  }
+
+  header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    margin: 0;
+    color: #fff;
+    letter-spacing: 2px;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 10px #fff; }
+    to { text-shadow: 0 0 20px #ccc; }
+  }
+
+  header p {
+    margin-top: 10px;
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
+    color: #ddd;
+  }
+
+  .big-banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background: #fff;
+    color: #000;
+    padding: 20px 15px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    flex-wrap: wrap;
+    max-width: 1000px;
+    margin: 30px auto 0px;
+    border-radius: 10px;
+    box-sizing: border-box;
+  }
+
+  /* Aggiunta per mobile */
+  @media (max-width: 600px) {
+    .big-banner {
+      margin: 20px 10px; /* sposta il banner dai bordi */
+      padding: 15px;     /* riduce padding interno */
+      font-size: 1rem;   /* testo più proporzionato */
+    }
+  }
+
+  .big-banner img { height: 40px; }
+  .big-banner a {
+    color: #000;
+    text-decoration: none;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .big-banner a:hover { text-decoration: underline; }
+
+  .container { max-width: 1200px; margin: auto; padding: 40px 20px; }
+  h2 { margin: 40px 0 20px; font-size: clamp(1.4rem, 4vw, 1.8rem); color: #fff; border-left: 5px solid #fff; padding-left: 10px; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+
+  .card {
+    background: #fff; /* sfondo bianco */
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.9);
+  }
+
+  .card img {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin-top: 10px; /* margin top 10px */
+  }
+
+  .card img:hover { transform: scale(1.05); }
+
+  .card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card h3 { margin: 0 0 10px; font-size: 1.15rem; color: #000; }
+  .card p { margin: 0 0 15px; font-size: 1rem; color: #333; flex-grow: 1; }
+
+  .btn {
+    display: block;
+    margin-top: auto;
+    padding: 12px;
+    background: #000;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+  }
+  .btn:hover { background: #444; }
+
+  footer {
+    text-align: center;
+    padding: 25px;
+    font-size: 14px;
+    color: #bbb;
+    background: rgba(0,0,0,0.7);
+    margin-top: 50px;
+  }
+
+  @media (max-width: 1024px) { .grid { grid-template-columns: 1fr; gap: 20px; } .card img { height: 200px; } }
+  @media (max-width: 600px) { header { padding: 40px 15px; } .card img { height: 180px; } .card-content { padding: 15px; } h2 { font-size: 1.5rem; } }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .lightbox.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.2);
+    transform: scale(0.7);
+    transition: transform 0.3s ease;
+  }
+  .lightbox.active img { transform: scale(1); }
+
+  .lightbox .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 30px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .pill-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  padding: 8px 14px;
+  border-radius: 50px;
+  display: none;
+  z-index: 9999;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+}
+.pill-btn:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.main-nav {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 20px;
+  flex-wrap: wrap; /* su mobile si va a capo */
+}
+
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.1);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.main-nav a:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+  .main-nav { gap: 15px; }
+  .main-nav a { padding: 6px 10px; font-size: 0.9rem; }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ZenosGarage</h1>
+  <p>I migliori prodotti auto selezionati per te.<br> Cura, accessori e sicurezza con un click.</p>
+
+
+<!-- Menu sotto il titolo -->
+  <nav class="main-nav">
+  <a href="#pulizia">✨ Pulizia & Detailing</a>
+  <a href="#sicurezza">🛡️ Sicurezza</a>
+  <a href="#accessori">📱 Accessori Tech</a>
+</nav>
+
+</header>
+
+<a href="#top" id="scrollTopBtn" class="pill-btn">&#8679; Su</a>
+
+
+<div class="big-banner">
+  🔥 Offerte Amazon esclusive!<br> Segui i nostri canali:
+  <a href="https://t.me/amazingofferte" target="_blank"><img src="LOGO_TELEGRAM.png" alt="Telegram"> Telegram</a>
+  <a href="https://whatsapp.com/channel/0029Vb9MchsBlHpXCb23sp41" target="_blank"><img src="LOGO_WHATSAPP.png" alt="WhatsApp"> WhatsApp</a>
+</div>
+
+
+<div class="container">
+
+  <!-- Pulizia & Detailing -->
+  <h2 id="pulizia">✨ Pulizia & Detailing</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/71ehu+bkHOL._AC_SL1500_.jpg" alt="Shampoo Auto">
+      <div class="card-content">
+        <h3>Shampoo Auto Concentrato</h3>
+        <p>Elimina sporco e grasso, brillantezza garantita.</p>
+        <a href="https://amzn.to/4pA3Nnx" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/61O3BeTCWCL._AC_SL1500_.jpg" alt="Cera Protettiva">
+      <div class="card-content">
+        <h3>Cera Protettiva Rapida</h3>
+        <p>Protezione UV e idrorepellenza in pochi minuti.</p>
+        <a href="https://amzn.to/4mrMKRR" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/61ACrns3h4L._AC_SL1000_.jpg" alt="Lucidante Auto">
+      <div class="card-content">
+        <h3>Lucidante Auto Premium</h3>
+        <p>Brillantezza professionale senza graffi.</p>
+        <a href="https://amzn.to/46RanyH" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/71h4zJs7fwS._AC_SL1500_.jpg" alt="Panni Microfibra">
+      <div class="card-content">
+        <h3>Panni in Microfibra</h3>
+        <p>Morbidissimi e ultra assorbenti per una pulizia perfetta.</p>
+        <a href="https://amzn.to/4gIN79K" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sicurezza -->
+  <h2 id="sicurezza">🛡️ Sicurezza</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/71wHrDmW-LL._AC_SL1500_.jpg" alt="Kit Emergenza">
+      <div class="card-content">
+        <h3>Kit Emergenza Completo</h3>
+        <p>Giubbotto, triangolo e accessori per ogni viaggio sicuro.</p>
+        <a href="https://amzn.to/4pDCJUt" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/41-pHkH33SL._AC_.jpg" alt="Mini Estintore">
+      <div class="card-content">
+        <h3>Mini Estintore Auto</h3>
+        <p>Compatto, certificato e pronto all’uso.</p>
+        <a href="https://amzn.to/4gAP2gg" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/71kUnpXD+0L._AC_SL1500_.jpg" alt="Segnaletica Auto">
+      <div class="card-content">
+        <h3>Segnaletica e Accessori</h3>
+        <p>Tutto il necessario per viaggiare sicuri.</p>
+        <a href="https://amzn.to/4mxGPuK" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/61LIfuNFs8L._AC_SL1200_.jpg" alt="Cavi Batteria">
+      <div class="card-content">
+        <h3>Cavi Batteria Professionali</h3>
+        <p>Ricarica rapida e sicura in caso di emergenza.</p>
+        <a href="https://amzn.to/3Kh8S4d" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accessori Tech -->
+  <h2 id="accessori">📱 Accessori Tech</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/71Mav34qzBL._AC_SL1500_.jpg" alt="Supporto Smartphone">
+      <div class="card-content">
+        <h3>Supporto Smartphone Magnetico</h3>
+        <p>Stabile, orientabile e compatibile con tutti i telefoni.</p>
+        <a href="https://amzn.to/4nkr3EQ" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/71xxN9KBGxL._AC_SL1500_.jpg" alt="Dash Cam">
+      <div class="card-content">
+        <h3>Dash Cam Full HD</h3>
+        <p>Video nitidi, visione notturna e rilevamento urti.</p>
+        <a href="https://amzn.to/4gEQxu1" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/71R6ka8Os4L._AC_SL1500_.jpg" alt="Caricatore Auto">
+      <div class="card-content">
+        <h3>Caricatore Auto Rapido</h3>
+        <p>Compatibile con tutti i telefoni, ricarica veloce.</p>
+        <a href="https://amzn.to/4pEli6c" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+    <div class="card">
+      <img src="https://m.media-amazon.com/images/I/71VpvYOpecL._AC_SL1500_.jpg" alt="Supporto Tablet">
+      <div class="card-content">
+        <h3>Supporto Tablet Auto</h3>
+        <p>Perfetto per passeggeri posteriori, stabile e regolabile.</p>
+        <a href="https://amzn.to/46kUroo" class="btn" target="_blank">Compra su Amazon</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="big-banner">
+  🎁 Non perdere nessuna offerta!<br> Segui i nostri canali:
+  <a href="https://t.me/amazingofferte" target="_blank"><img src="LOGO_TELEGRAM.png" alt="Telegram"> Telegram</a>
+  <a href="https://whatsapp.com/channel/0029Vb9MchsBlHpXCb23sp41" target="_blank"><img src="LOGO_WHATSAPP.png" alt="WhatsApp"> WhatsApp</a>
+</div>
+
+<footer>
+  <p>© 2025 ZenosGarage - I link in questa pagina sono affiliati Amazon. Se acquisti tramite questi link, potrei ricevere una piccola commissione senza costi extra per te.</p>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <span class="close-btn" id="close-lightbox">&times;</span>
+  <img id="lightbox-img" src="" alt="Anteprima immagine">
+</div>
+
+<script>
+  const images = document.querySelectorAll('.card img');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const closeBtn = document.getElementById('close-lightbox');
+
+  images.forEach(img => {
+    img.addEventListener('click', () => {
+      lightbox.classList.add('active');
+      lightboxImg.src = img.src;
+    });
+  });
+
+  closeBtn.addEventListener('click', () => {
+    lightbox.classList.remove('active');
+  });
+
+  lightbox.addEventListener('click', (e) => {
+    if(e.target === lightbox) lightbox.classList.remove('active');
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === "Escape") lightbox.classList.remove('active');
+  });
+
+  const scrollBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', () => {
+  scrollBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+});
+
+
+
+</script>
+
+</body>
+</html>
